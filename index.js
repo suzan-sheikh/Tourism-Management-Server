@@ -1,7 +1,7 @@
 const express = require("express");
 const cors = require("cors");
 require("dotenv").config();
-const { MongoClient, ServerApiVersion } = require("mongodb");
+const { MongoClient, ServerApiVersion, ObjectId } = require("mongodb");
 const app = express();
 const port = process.env.PORT || 4000;
 
@@ -27,19 +27,61 @@ async function run() {
 
     const spotCollection = client.db("spotDB").collection("spot");
 
-
-
-    app.post("/spot", async (req, res) => {
-        const newSpot = req.body;
-        console.log(newSpot);
-        const result = await spotCollection.insertOne(newSpot);
-        res.send(result);
+    // get data to MongoDB
+    app.get("/spot", async (req, res) => {
+      const cursor = spotCollection.find();
+      const result = await cursor.toArray();
+      res.send(result);
     });
 
+    // get data filter to email
+    app.get("/mySpot/:email", async (req, res) => {
+      console.log(req.params.email);
+      const result = await spotCollection.find({ userEmail: req.params.email }).toArray();
+      res.send(result)
+    })
+
+    app.get('/singleSpot/:id', async (req, res) => {
+      const result = await spotCollection.findOne({_id: new ObjectId(req.params.id)})
+      console.log(req.params.id);
+      console.log(result);
+      res.send(result)
+    })
+
+    app.put('/updateSpot/:id', async(req, res) => {
+      console.log(req.params.id);
+
+      const query = {_id: new ObjectId(req.params.id)};
+      const data = {
+        $set:{
+          name:req.body.name,
+          country:req.body.country,
+          location:req.body.location,
+          description:req.body.description,
+          cost:req.body.cost,
+          seasonality:req.body.seasonality,
+          time:req.body.time,
+          totalVisitor:req.body.totalVisitor,
+          imgURL:req.body.imgURL,
+        }
+      }
+      const result = await spotCollection.updateOne(query, data)
+      console.log(result);
+      res.send(result)
+    })
 
 
 
 
+
+
+    // send data to MongoDB
+    app.post("/spot", async (req, res) => {
+      const newSpot = req.body;
+      console.log(newSpot);
+      const result = await spotCollection.insertOne(newSpot);
+      res.send(result);
+    });
 
     // Send a ping to confirm a successful connection
     await client.db("admin").command({ ping: 1 });
