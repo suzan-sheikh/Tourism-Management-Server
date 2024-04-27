@@ -36,21 +36,16 @@ async function run() {
 
     // get data filter to email
     app.get("/mySpot/:email", async (req, res) => {
-      console.log(req.params.email);
       const result = await spotCollection.find({ userEmail: req.params.email }).toArray();
       res.send(result)
     })
 
     app.get('/singleSpot/:id', async (req, res) => {
       const result = await spotCollection.findOne({_id: new ObjectId(req.params.id)})
-      console.log(req.params.id);
-      console.log(result);
       res.send(result)
     })
 
     app.put('/updateSpot/:id', async(req, res) => {
-      console.log(req.params.id);
-
       const query = {_id: new ObjectId(req.params.id)};
       const data = {
         $set:{
@@ -66,22 +61,27 @@ async function run() {
         }
       }
       const result = await spotCollection.updateOne(query, data)
-      console.log(result);
       res.send(result)
+    })
+
+    // send data to MongoDB
+    app.post("/spot", async (req, res) => {
+      const newSpot = req.body;
+      const result = await spotCollection.insertOne(newSpot);
+      res.send(result);
+    });
+
+
+    app.delete("/delet/:id", async(req, res) => {
+      const result = await spotCollection.deleteOne({_id: new ObjectId(req.params.id)});
+      console.log(result);
+      res.send(result);
     })
 
 
 
 
 
-
-    // send data to MongoDB
-    app.post("/spot", async (req, res) => {
-      const newSpot = req.body;
-      console.log(newSpot);
-      const result = await spotCollection.insertOne(newSpot);
-      res.send(result);
-    });
 
     // Send a ping to confirm a successful connection
     await client.db("admin").command({ ping: 1 });
