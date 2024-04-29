@@ -28,9 +28,18 @@ async function run() {
 
     const spotCollection = client.db("spotDB").collection("spot");
 
+    const countryCollection = client.db("countryDB").collection("country");
+
+    const allCountryCollection = client.db("allCountryDB").collection("allCountry");
+
     // get data to MongoDB
     app.get("/spot", async (req, res) => {
       const cursor = spotCollection.find();
+      const result = await cursor.toArray();
+      res.send(result);
+    });
+    app.get("/country", async (req, res) => {
+      const cursor = countryCollection.find();
       const result = await cursor.toArray();
       res.send(result);
     });
@@ -41,10 +50,28 @@ async function run() {
       res.send(result)
     })
 
+        // get data filter to country 
+        app.get("/allCountry/:country", async (req, res) => {
+          const result = await allCountryCollection.find({ country: req.params.country }).toArray();
+          res.send(result)
+        })
+
     app.get('/singleSpot/:id', async (req, res) => {
       const result = await spotCollection.findOne({_id: new ObjectId(req.params.id)})
       res.send(result)
     })
+
+    app.get('/countryName/:id', async (req, res) => {
+      const result = await allCountryCollection.findOne({_id: new ObjectId(req.params.id)})
+      res.send(result)
+    })
+
+    app.get('/singleProduct/:id', async (req, res) => {
+      const result = await spotCollection.findOne({_id: new ObjectId(req.params.id)})
+      res.send(result)
+    })
+
+
 
     app.put('/updateSpot/:id', async(req, res) => {
       const query = {_id: new ObjectId(req.params.id)};
@@ -72,7 +99,23 @@ async function run() {
       res.send(result);
     });
 
+    // send data to MongoDB
+    app.post("/country", async (req, res) => {
+      const newSpot = req.body;
+      const result = await countryCollection.insertOne(newSpot);
+      res.send(result);
+    });
 
+    // send data to MongoDB
+    app.post("/allCountry", async (req, res) => {
+      const newSpot = req.body;
+      const result = await allCountryCollection.insertOne(newSpot);
+      res.send(result);
+    });
+
+
+
+    // delete data
     app.delete("/delet/:id", async(req, res) => {
       const result = await spotCollection.deleteOne({_id: new ObjectId(req.params.id)});
       console.log(result);
