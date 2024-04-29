@@ -6,7 +6,12 @@ const app = express();
 const port = process.env.PORT || 4000;
 
 // middleware
-app.use(cors());
+const corsOptions = {
+  origin: ['http://localhost:5173', 'https://awt-tourism.web.app'],
+  credentials: true,
+  optionSuccessStatus: 200,
+}
+app.use(cors(corsOptions))
 app.use(express.json());
 
 // const uri = "mongodb://localhost:27017";
@@ -46,7 +51,8 @@ async function run() {
 
     // get data filter to email
     app.get("/mySpot/:email", async (req, res) => {
-      const result = await spotCollection.find({ userEmail: req.params.email }).toArray();
+      console.log(req.params.email);
+      const result = await spotCollection.find({ email: req.params.email }).toArray();
       res.send(result)
     })
 
