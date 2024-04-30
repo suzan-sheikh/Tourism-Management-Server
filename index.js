@@ -7,11 +7,11 @@ const port = process.env.PORT || 4000;
 
 // middleware
 const corsOptions = {
-  origin: ['http://localhost:5173', 'https://awt-tourism.web.app'],
+  origin: ["http://localhost:5173", "https://awt-tourism.web.app"],
   credentials: true,
   optionSuccessStatus: 200,
-}
-app.use(cors(corsOptions))
+};
+app.use(cors(corsOptions));
 app.use(express.json());
 
 // const uri = "mongodb://localhost:27017";
@@ -35,7 +35,9 @@ async function run() {
 
     const countryCollection = client.db("countryDB").collection("country");
 
-    const allCountryCollection = client.db("allCountryDB").collection("allCountry");
+    const allCountryCollection = client
+      .db("allCountryDB")
+      .collection("allCountry");
 
     // get data to MongoDB
     app.get("/spot", async (req, res) => {
@@ -52,51 +54,58 @@ async function run() {
     // get data filter to email
     app.get("/mySpot/:email", async (req, res) => {
       console.log(req.params.email);
-      const result = await spotCollection.find({ email: req.params.email }).toArray();
-      res.send(result)
-    })
+      const result = await spotCollection
+        .find({ email: req.params.email })
+        .toArray();
+      res.send(result);
+    });
 
-        // get data filter to country 
-        app.get("/allCountry/:country", async (req, res) => {
-          const result = await allCountryCollection.find({ country: req.params.country }).toArray();
-          res.send(result)
-        })
+    app.get("/allCountry/:country", async (req, res) => {
+      const result = await allCountryCollection
+        .find({ country: req.params.country })
+        .toArray();
+      res.send(result);
+    });
 
-    app.get('/singleSpot/:id', async (req, res) => {
-      const result = await spotCollection.findOne({_id: new ObjectId(req.params.id)})
-      res.send(result)
-    })
+    app.get("/singleSpot/:id", async (req, res) => {
+      const result = await spotCollection.findOne({
+        _id: new ObjectId(req.params.id),
+      });
+      res.send(result);
+    });
 
-    app.get('/countryName/:id', async (req, res) => {
-      const result = await allCountryCollection.findOne({_id: new ObjectId(req.params.id)})
-      res.send(result)
-    })
+    app.get("/countryName/:id", async (req, res) => {
+      const result = await allCountryCollection.findOne({
+        _id: new ObjectId(req.params.id),
+      });
+      res.send(result);
+    });
 
-    app.get('/singleProduct/:id', async (req, res) => {
-      const result = await spotCollection.findOne({_id: new ObjectId(req.params.id)})
-      res.send(result)
-    })
+    app.get("/singleProduct/:id", async (req, res) => {
+      const result = await spotCollection.findOne({
+        _id: new ObjectId(req.params.id),
+      });
+      res.send(result);
+    });
 
-
-
-    app.put('/updateSpot/:id', async(req, res) => {
-      const query = {_id: new ObjectId(req.params.id)};
+    app.put("/updateSpot/:id", async (req, res) => {
+      const query = { _id: new ObjectId(req.params.id) };
       const data = {
-        $set:{
-          name:req.body.name,
-          country:req.body.country,
-          location:req.body.location,
-          description:req.body.description,
-          cost:req.body.cost,
-          seasonality:req.body.seasonality,
-          time:req.body.time,
-          totalVisitor:req.body.totalVisitor,
-          imgURL:req.body.imgURL,
-        }
-      }
-      const result = await spotCollection.updateOne(query, data)
-      res.send(result)
-    })
+        $set: {
+          name: req.body.name,
+          country: req.body.country,
+          location: req.body.location,
+          description: req.body.description,
+          cost: req.body.cost,
+          seasonality: req.body.seasonality,
+          time: req.body.time,
+          totalVisitor: req.body.totalVisitor,
+          imgURL: req.body.imgURL,
+        },
+      };
+      const result = await spotCollection.updateOne(query, data);
+      res.send(result);
+    });
 
     // send data to MongoDB
     app.post("/spot", async (req, res) => {
@@ -120,19 +129,14 @@ async function run() {
       res.send(result);
     });
 
-
-
     // delete data
-    app.delete("/delet/:id", async(req, res) => {
-      const result = await spotCollection.deleteOne({_id: new ObjectId(req.params.id)});
+    app.delete("/delet/:id", async (req, res) => {
+      const result = await spotCollection.deleteOne({
+        _id: new ObjectId(req.params.id),
+      });
       console.log(result);
       res.send(result);
-    })
-
-
-
-
-
+    });
 
     // Send a ping to confirm a successful connection
     // await client.db("admin").command({ ping: 1 });
